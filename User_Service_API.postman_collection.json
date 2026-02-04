@@ -1,0 +1,801 @@
+{
+	"info": {
+		"_postman_id": "user-service-api-collection",
+		"name": "User Service API",
+		"description": "Complete test collection for User Registration API with all validation scenarios",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Health Checks",
+			"item": [
+				{
+					"name": "Root Endpoint",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/",
+							"host": ["{{baseUrl}}"],
+							"path": [""]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Health Check",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/health",
+							"host": ["{{baseUrl}}"],
+							"path": ["health"]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "User Registration - Success Scenarios",
+			"item": [
+				{
+					"name": "Valid User Registration",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 201\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"pm.test(\"Response has success message\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.message).to.eql(\"User created successfully\");",
+									"});",
+									"",
+									"pm.test(\"No error info present\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.errorInfo).to.be.oneOf([null, undefined]);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"firstname\": \"John\",\n  \"lastname\": \"Doe\",\n  \"email\": \"john.doe@example.com\",\n  \"username\": \"johndoe123\",\n  \"password\": \"SecurePass@123\",\n  \"confirmpassword\": \"SecurePass@123\",\n  \"countrycode\": \"+1\",\n  \"mobilenumber\": \"9876543210\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/users/register",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "users", "register"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Valid User - Different Country Code",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"firstname\": \"Jane\",\n  \"lastname\": \"Smith\",\n  \"email\": \"jane.smith@example.com\",\n  \"username\": \"janesmith456\",\n  \"password\": \"StrongPass#456\",\n  \"confirmpassword\": \"StrongPass#456\",\n  \"countrycode\": \"+91\",\n  \"mobilenumber\": \"9123456789\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/users/register",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "users", "register"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Valid User - All Special Characters",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"firstname\": \"Michael\",\n  \"lastname\": \"Brown\",\n  \"email\": \"michael.brown@example.com\",\n  \"username\": \"michaelbrown789\",\n  \"password\": \"Pass@123!Word#\",\n  \"confirmpassword\": \"Pass@123!Word#\",\n  \"countrycode\": \"+44\",\n  \"mobilenumber\": \"7890123456\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/users/register",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "users", "register"]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "User Registration - Validation Errors",
+			"item": [
+				{
+					"name": "Invalid Firstname - Contains Numbers",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 422 (Validation Error)\", function () {",
+									"    pm.response.to.have.status(422);",
+									"});",
+									"",
+									"pm.test(\"Response contains error details\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.detail).to.be.an('array');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"firstname\": \"John123\",\n  \"lastname\": \"Doe\",\n  \"email\": \"test1@example.com\",\n  \"username\": \"testuser1\",\n  \"password\": \"SecurePass@123\",\n  \"confirmpassword\": \"SecurePass@123\",\n  \"countrycode\": \"+1\",\n  \"mobilenumber\": \"1234567890\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/users/register",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "users", "register"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Invalid Lastname - Contains Special Chars",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"firstname\": \"John\",\n  \"lastname\": \"Doe@123\",\n  \"email\": \"test2@example.com\",\n  \"username\": \"testuser2\",\n  \"password\": \"SecurePass@123\",\n  \"confirmpassword\": \"SecurePass@123\",\n  \"countrycode\": \"+1\",\n  \"mobilenumber\": \"1234567891\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/users/register",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "users", "register"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Invalid Email - Missing @",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"firstname\": \"John\",\n  \"lastname\": \"Doe\",\n  \"email\": \"invalidemail.com\",\n  \"username\": \"testuser3\",\n  \"password\": \"SecurePass@123\",\n  \"confirmpassword\": \"SecurePass@123\",\n  \"countrycode\": \"+1\",\n  \"mobilenumber\": \"1234567892\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/users/register",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "users", "register"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Invalid Email - Missing Domain",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"firstname\": \"John\",\n  \"lastname\": \"Doe\",\n  \"email\": \"test@\",\n  \"username\": \"testuser4\",\n  \"password\": \"SecurePass@123\",\n  \"confirmpassword\": \"SecurePass@123\",\n  \"countrycode\": \"+1\",\n  \"mobilenumber\": \"1234567893\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/users/register",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "users", "register"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Invalid Username - Contains Special Chars",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"firstname\": \"John\",\n  \"lastname\": \"Doe\",\n  \"email\": \"test5@example.com\",\n  \"username\": \"test@user\",\n  \"password\": \"SecurePass@123\",\n  \"confirmpassword\": \"SecurePass@123\",\n  \"countrycode\": \"+1\",\n  \"mobilenumber\": \"1234567894\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/users/register",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "users", "register"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Invalid Password - Too Short",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"firstname\": \"John\",\n  \"lastname\": \"Doe\",\n  \"email\": \"test6@example.com\",\n  \"username\": \"testuser6\",\n  \"password\": \"Pass@1\",\n  \"confirmpassword\": \"Pass@1\",\n  \"countrycode\": \"+1\",\n  \"mobilenumber\": \"1234567895\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/users/register",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "users", "register"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Invalid Password - No Special Characters",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"firstname\": \"John\",\n  \"lastname\": \"Doe\",\n  \"email\": \"test7@example.com\",\n  \"username\": \"testuser7\",\n  \"password\": \"Password123\",\n  \"confirmpassword\": \"Password123\",\n  \"countrycode\": \"+1\",\n  \"mobilenumber\": \"1234567896\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/users/register",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "users", "register"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Invalid Password - No Numbers",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"firstname\": \"John\",\n  \"lastname\": \"Doe\",\n  \"email\": \"test8@example.com\",\n  \"username\": \"testuser8\",\n  \"password\": \"Password@Pass\",\n  \"confirmpassword\": \"Password@Pass\",\n  \"countrycode\": \"+1\",\n  \"mobilenumber\": \"1234567897\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/users/register",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "users", "register"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Password Mismatch",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"firstname\": \"John\",\n  \"lastname\": \"Doe\",\n  \"email\": \"test9@example.com\",\n  \"username\": \"testuser9\",\n  \"password\": \"SecurePass@123\",\n  \"confirmpassword\": \"DifferentPass@123\",\n  \"countrycode\": \"+1\",\n  \"mobilenumber\": \"1234567898\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/users/register",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "users", "register"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Invalid Country Code - Missing Plus",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"firstname\": \"John\",\n  \"lastname\": \"Doe\",\n  \"email\": \"test10@example.com\",\n  \"username\": \"testuser10\",\n  \"password\": \"SecurePass@123\",\n  \"confirmpassword\": \"SecurePass@123\",\n  \"countrycode\": \"1\",\n  \"mobilenumber\": \"1234567899\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/users/register",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "users", "register"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Invalid Country Code - Contains Letters",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"firstname\": \"John\",\n  \"lastname\": \"Doe\",\n  \"email\": \"test11@example.com\",\n  \"username\": \"testuser11\",\n  \"password\": \"SecurePass@123\",\n  \"confirmpassword\": \"SecurePass@123\",\n  \"countrycode\": \"+1a\",\n  \"mobilenumber\": \"1234567800\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/users/register",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "users", "register"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Invalid Mobile - Too Short",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"firstname\": \"John\",\n  \"lastname\": \"Doe\",\n  \"email\": \"test12@example.com\",\n  \"username\": \"testuser12\",\n  \"password\": \"SecurePass@123\",\n  \"confirmpassword\": \"SecurePass@123\",\n  \"countrycode\": \"+1\",\n  \"mobilenumber\": \"123\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/users/register",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "users", "register"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Invalid Mobile - Contains Letters",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"firstname\": \"John\",\n  \"lastname\": \"Doe\",\n  \"email\": \"test13@example.com\",\n  \"username\": \"testuser13\",\n  \"password\": \"SecurePass@123\",\n  \"confirmpassword\": \"SecurePass@123\",\n  \"countrycode\": \"+1\",\n  \"mobilenumber\": \"12345abc90\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/users/register",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "users", "register"]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "User Registration - Duplicate Checks",
+			"item": [
+				{
+					"name": "Duplicate Username",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 400 or 422\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([400, 422]);",
+									"});",
+									"",
+									"pm.test(\"Error message mentions username exists\", function () {",
+									"    var responseText = pm.response.text();",
+									"    pm.expect(responseText.toLowerCase()).to.include('username');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"firstname\": \"John\",\n  \"lastname\": \"Doe\",\n  \"email\": \"different.email@example.com\",\n  \"username\": \"johndoe123\",\n  \"password\": \"SecurePass@123\",\n  \"confirmpassword\": \"SecurePass@123\",\n  \"countrycode\": \"+1\",\n  \"mobilenumber\": \"9999999999\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/users/register",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "users", "register"]
+						},
+						"description": "Try to register with username that already exists"
+					},
+					"response": []
+				},
+				{
+					"name": "Duplicate Email",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"firstname\": \"Jane\",\n  \"lastname\": \"Smith\",\n  \"email\": \"john.doe@example.com\",\n  \"username\": \"uniqueusername\",\n  \"password\": \"SecurePass@123\",\n  \"confirmpassword\": \"SecurePass@123\",\n  \"countrycode\": \"+1\",\n  \"mobilenumber\": \"8888888888\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/users/register",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "users", "register"]
+						},
+						"description": "Try to register with email that already exists"
+					},
+					"response": []
+				},
+				{
+					"name": "Duplicate Mobile Number",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"firstname\": \"Mike\",\n  \"lastname\": \"Johnson\",\n  \"email\": \"mike.johnson@example.com\",\n  \"username\": \"mikejohnson\",\n  \"password\": \"SecurePass@123\",\n  \"confirmpassword\": \"SecurePass@123\",\n  \"countrycode\": \"+1\",\n  \"mobilenumber\": \"9876543210\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/users/register",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "users", "register"]
+						},
+						"description": "Try to register with mobile number that already exists"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "User Registration - Missing Fields",
+			"item": [
+				{
+					"name": "Missing Firstname",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"lastname\": \"Doe\",\n  \"email\": \"test@example.com\",\n  \"username\": \"testuser\",\n  \"password\": \"SecurePass@123\",\n  \"confirmpassword\": \"SecurePass@123\",\n  \"countrycode\": \"+1\",\n  \"mobilenumber\": \"1234567890\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/users/register",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "users", "register"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Missing Email",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"firstname\": \"John\",\n  \"lastname\": \"Doe\",\n  \"username\": \"testuser\",\n  \"password\": \"SecurePass@123\",\n  \"confirmpassword\": \"SecurePass@123\",\n  \"countrycode\": \"+1\",\n  \"mobilenumber\": \"1234567890\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/users/register",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "users", "register"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Missing Password",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"firstname\": \"John\",\n  \"lastname\": \"Doe\",\n  \"email\": \"test@example.com\",\n  \"username\": \"testuser\",\n  \"confirmpassword\": \"SecurePass@123\",\n  \"countrycode\": \"+1\",\n  \"mobilenumber\": \"1234567890\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/users/register",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "users", "register"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Empty Request Body",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/users/register",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "users", "register"]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "User Registration - Boundary Tests",
+			"item": [
+				{
+					"name": "Minimum Length Fields",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"firstname\": \"Jo\",\n  \"lastname\": \"Do\",\n  \"email\": \"a@b.co\",\n  \"username\": \"abc\",\n  \"password\": \"Pass@123\",\n  \"confirmpassword\": \"Pass@123\",\n  \"countrycode\": \"+1\",\n  \"mobilenumber\": \"1234567890\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/users/register",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "users", "register"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Maximum Length Mobile Number",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"firstname\": \"John\",\n  \"lastname\": \"Doe\",\n  \"email\": \"maxmobile@example.com\",\n  \"username\": \"maxmobileuser\",\n  \"password\": \"SecurePass@123\",\n  \"confirmpassword\": \"SecurePass@123\",\n  \"countrycode\": \"+1\",\n  \"mobilenumber\": \"123456789012345\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/users/register",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "users", "register"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Max Country Code Digits",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"firstname\": \"John\",\n  \"lastname\": \"Doe\",\n  \"email\": \"maxcode@example.com\",\n  \"username\": \"maxcodeuser\",\n  \"password\": \"SecurePass@123\",\n  \"confirmpassword\": \"SecurePass@123\",\n  \"countrycode\": \"+9999\",\n  \"mobilenumber\": \"1234567890\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/users/register",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "users", "register"]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "User Registration - Special Cases",
+			"item": [
+				{
+					"name": "Email with Plus Sign",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"firstname\": \"Test\",\n  \"lastname\": \"User\",\n  \"email\": \"test+tag@example.com\",\n  \"username\": \"testplustag\",\n  \"password\": \"SecurePass@123\",\n  \"confirmpassword\": \"SecurePass@123\",\n  \"countrycode\": \"+1\",\n  \"mobilenumber\": \"5551234567\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/users/register",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "users", "register"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Email with Dots",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"firstname\": \"Test\",\n  \"lastname\": \"User\",\n  \"email\": \"test.user.name@example.com\",\n  \"username\": \"testdotuser\",\n  \"password\": \"SecurePass@123\",\n  \"confirmpassword\": \"SecurePass@123\",\n  \"countrycode\": \"+1\",\n  \"mobilenumber\": \"5551234568\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/users/register",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "users", "register"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Whitespace Trimming Test",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"firstname\": \"  John  \",\n  \"lastname\": \"  Doe  \",\n  \"email\": \"  trimtest@example.com  \",\n  \"username\": \"  trimuser  \",\n  \"password\": \"SecurePass@123\",\n  \"confirmpassword\": \"SecurePass@123\",\n  \"countrycode\": \"+1\",\n  \"mobilenumber\": \"5551234569\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/users/register",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "users", "register"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Case Sensitivity - Email",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"firstname\": \"Test\",\n  \"lastname\": \"User\",\n  \"email\": \"TestCase@Example.COM\",\n  \"username\": \"testcaseuser\",\n  \"password\": \"SecurePass@123\",\n  \"confirmpassword\": \"SecurePass@123\",\n  \"countrycode\": \"+1\",\n  \"mobilenumber\": \"5551234570\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/users/register",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "users", "register"]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:7566",
+			"type": "string"
+		}
+	]
+}
+
